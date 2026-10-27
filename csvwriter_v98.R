@@ -8,26 +8,35 @@
 #' @examples working
 
 csv <- function(variable, varname=0, read=F) {
+  #u10.27.26
   #recent update adds function to clear a dataset by saving as csv and then reading this csv file
-
+  
   newdrive <- paste0(savedesktop_global, "/R Scripts/RDataResults")
+  if(exists(savedesktop_global)==F){
+    desktop <- system(
+      'powershell -NoProfile -Command "[Environment]::GetFolderPath(\'Desktop\')"',
+      intern = TRUE
+    )
+    folder <- file.path(desktop, "r_temp_results")
+    dir.create(folder, recursive = TRUE, showWarnings = FALSE)
+    newdrive <- folder}
   timename <- as.character(Sys.time())
   timename <- gsub (" ", "_", timename)
   timename <- gsub (":", "_", timename)
   timename <- gsub ("-", "_", timename)
   if (varname==0) {varname <- deparse(substitute(variable))}
-
+  
   csvname <- paste(varname, "_",timename,".csv", sep="")
-
+  
   setwd(newdrive) #dataoutput folder
   if (class(try(as.data.frame(variable), silent=TRUE)) !="try-error") {
-  write.csv(variable, file = csvname)
+    write.csv(variable, file = csvname)
   }
-
+  
   if (class(try(as.data.frame(variable), silent=TRUE)) =="try-error") {
     capture.output(variable, file=csvname)
   }
-
+  
   output <- 0
   if (read==T){
     print(newdrive)
